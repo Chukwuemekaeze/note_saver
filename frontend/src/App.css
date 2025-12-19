@@ -1,0 +1,11 @@
+div> ul> div {
+    display: flex;
+    flex-direction: row;
+
+
+}
+
+div> ul> div > li, button {
+    border: 1px solid black;
+}
+    
