@@ -1,14 +1,21 @@
 import notetakerLogo from '/notetaker_logo.svg'
 import { useState, useEffect} from 'react'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import './App.css'
 import { fetchNotes, createNote, updateNote, deleteNote } 
 from './services/api.js'
+import NoteDetail from './components/NoteDetail.jsx'
 
 
 function NotesAndActionButtons({noteId, note, onUpdate, onDelete}) {
   return (
       <li className='flex w-full gap-2 mb-2'>
-        <span className='flex-1 border border-black p-2'>{note}</span>
+        <Link 
+        to={`/notes/${noteId}`} 
+        className='flex-1 border border-black p-2'
+        >
+          {note}
+        </Link>
         <button 
           className={`rounded-lg bg-blue-500 text-white px-3 py-2`}
           onClick={() => onUpdate(noteId, note)}
@@ -62,7 +69,7 @@ function Pagination({currentPage, totalPages, onPageChange}) {
   )
 }
 
-function App() {
+function HomePage() {
   const [noteText, setNoteText] = useState('')
   const [notes, setNotes] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
@@ -207,6 +214,17 @@ function App() {
       </footer>
     </>
   )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/notes/:id" element={<NoteDetail />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App
