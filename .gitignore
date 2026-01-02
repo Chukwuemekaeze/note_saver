@@ -1,8 +1,15 @@
 **/venv/
 **/__pycache__/
 **/*.pyc
+**/*.pyo
 .env
+instance/
+
 .DS_Store
 .idea/
 .vscode/
 **/node_modules/
+
+**.db
+**.sqlite
+**.sqlite3

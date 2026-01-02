@@ -1,8 +1,8 @@
 const API_URL ='http://localhost:5000/api';
 
 export const fetchNotes = async (page = 1) => {
-  const response = await fetch(`${API_URL}/notes?page=${page}`);
-  return response.json();
+    const response = await fetch(`${API_URL}/notes?page=${page}`);
+    return response.json();
 };
 
 export const createNote = async (noteText) => {
