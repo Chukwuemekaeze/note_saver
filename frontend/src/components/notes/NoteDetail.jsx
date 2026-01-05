@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchNoteById } from '../services/api';
+import { fetchNoteById } from '../../services/api';
 
 function NoteDetail(){
     const { id } = useParams();
