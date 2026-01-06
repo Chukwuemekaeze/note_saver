@@ -1,18 +1,41 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from datetime import datetime, timezone
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
+# Configuration from environment variables
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
+app.config['ENV'] = os.getenv('FLASK_ENV', 'development')
+
 #DB configuration
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(basedir, "notes.db")}'
+db_name = os.getenv('DATABASE_NAME', 'notes.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(basedir, db_name)}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+app.config['RATELIMIT_STORAGE_URI'] = os.getenv('RATELIMIT_STORAGE_URI', 'memory://')
 
 #Initialise DB
 db = SQLAlchemy(app)
+
+# Initialize Rate Limiter
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=[
+        f"{os.getenv('RATE_LIMIT_PER_MINUTE', '60')} per minute",
+        f"{os.getenv('RATE_LIMIT_PER_HOUR', '1000')} per hour"
+    ],
+    storage_uri=app.config['RATELIMIT_STORAGE_URI']
+)
 
 #Define Note Model
 class Note(db.Model):
@@ -36,14 +59,14 @@ class Note(db.Model):
     
 
 
+# CORS Configuration from environment variables
+allowed_origins = os.getenv('ALLOWED_ORIGINS', 'http://localhost:5173').split(',')
+
 CORS(app, resources={
     r"/api/*": {
-        "origins": ["http://localhost:5173",
-                    "http://127.0.0.1:5173", # react dev server
-                    "https://emekasexampledomain.com"],
+        "origins": allowed_origins,
         "methods": ["GET", "POST", "PUT", "DELETE"],
-        "allow_headers": ["Content-Type", "Authorization",
-                        "application/json"]
+        "allow_headers": ["Content-Type", "Authorization"]
     }
 })
 
@@ -53,6 +76,7 @@ def welcome():
     return "<h1>Welcome to the Note Taker App!</h1>"
 
 @app.route("/api/notes", methods=["POST"])
+@limiter.limit("10 per minute")
 def create_note():
     data = request.json
     note_content = data.get("content", "")
@@ -105,6 +129,7 @@ def get_note(note_id):
 
 
 @app.route("/api/notes/<int:note_id>", methods=["PUT"])
+@limiter.limit("20 per minute")
 def update_note(note_id):
     data = request.json
     new_content = data.get("content", "")
@@ -129,6 +154,7 @@ def update_note(note_id):
 
 
 @app.route("/api/notes/<int:note_id>", methods=["DELETE"])
+@limiter.limit("10 per minute")
 def delete_note(note_id):
     note = Note.query.get(note_id)
 
