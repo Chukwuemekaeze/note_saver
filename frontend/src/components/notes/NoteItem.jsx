@@ -1,28 +1,28 @@
 import { Link } from "react-router-dom";
+import { FiEdit2, FiTrash2 } from "react-icons/fi";
 
-function NoteItem({noteId, note, onUpdate, onDelete}) {
-    return(
-        <li className='flex w-full gap-2 mb-2'>
-            <Link 
-                to={`/notes/${noteId}`} 
-                className='flex-1 border border-black p-2 hover:bg-gray-100 cursor-pointer'
-            >
-                {note}
-            </Link>
-            <button 
-                className={'rounded-lg bg-blue-500 text-white px-3 py-2'}
-                onClick={() => onUpdate(noteId, note)}
-            >
-                Update
-            </button>
-            <button 
-            className={'rounded-lg bg-red-500 text-white px-3 py-2 hover:bg-red-600'}
-            onClick={() => onDelete(noteId)}
-            >
-                Delete
-            </button>
-        </li>
-    )
+function NoteItem({ noteId, note, onUpdate, onDelete }) {
+  return (
+    <li className="note-item">
+      <Link to={`/notes/${noteId}`} className="note-content">
+        {note}
+      </Link>
+
+      <div className="note-actions">
+        <button
+          className="btn btn-secondary"
+          onClick={() => onUpdate(noteId, note)}
+        >
+          <FiEdit2 size={16} />
+          Update
+        </button>
+        <button className="btn btn-danger" onClick={() => onDelete(noteId)}>
+          <FiTrash2 size={16} />
+          Delete
+        </button>
+      </div>
+    </li>
+  );
 }
 
 export default NoteItem;

@@ -1,7 +1,7 @@
-import './App.css'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import HomePage from './pages/HomePage.jsx'
-import NoteDetail from './components/notes/NoteDetail.jsx'
+import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage.jsx";
+import NoteDetail from "./components/notes/NoteDetail.jsx";
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
         <Route path="/notes/:id" element={<NoteDetail />} />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
